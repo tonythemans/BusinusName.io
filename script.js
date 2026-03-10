@@ -1,57 +1,82 @@
 let peer = new Peer();
 let conn;
 
-peer.on("open", function(id) {
-    document.getElementById("myid").innerText = id;
+peer.on("open", function(id){
+document.getElementById("myid").innerText = id;
 });
 
-peer.on("connection", function(connection) {
-    conn = connection;
-    setupConnection();
+peer.on("connection", function(connection){
+conn = connection;
+setupConnection();
 });
 
-function connect() {
-    let peerid = document.getElementById("peerid").value;
-    conn = peer.connect(peerid);
-    setupConnection();
+function connect(){
+
+let peerid = document.getElementById("peerid").value;
+
+if(!peerid){
+alert("Enter a peer ID");
+return;
 }
 
-function setupConnection() {
+conn = peer.connect(peerid);
 
-    conn.on("data", function(data) {
-        addMessage("friend", data);
-    });
+setupConnection();
+}
+
+function setupConnection(){
+
+conn.on("data", function(data){
+addMessage("friend", data);
+});
+
+conn.on("open", function(){
+addSystemMessage("Connected!");
+});
 
 }
 
-function send() {
+function send(){
 
-    let msg = document.getElementById("message").value;
+let input = document.getElementById("message");
+let msg = input.value;
 
-    if(!msg) return;
+if(!msg || !conn) return;
 
-    conn.send(msg);
-    addMessage("you", msg);
+conn.send(msg);
 
-    document.getElementById("message").value = "";
+addMessage("you", msg);
+
+input.value = "";
 }
 
-function addMessage(type, text) {
+function addMessage(type,text){
 
-    let chat = document.getElementById("chat");
+let chat = document.getElementById("chat");
 
-    let div = document.createElement("div");
-    div.classList.add("message");
+let div = document.createElement("div");
+div.classList.add("message");
 
-    if(type === "you"){
-        div.classList.add("you");
-        div.innerText = "You: " + text;
-    } else {
-        div.classList.add("friend");
-        div.innerText = "Friend: " + text;
-    }
+if(type==="you"){
+div.classList.add("you");
+div.innerText = "You: " + text;
+}else{
+div.classList.add("friend");
+div.innerText = "Friend: " + text;
+}
 
-    chat.appendChild(div);
+chat.appendChild(div);
 
-    chat.scrollTop = chat.scrollHeight;
+chat.scrollTop = chat.scrollHeight;
+}
+
+function addSystemMessage(text){
+
+let chat = document.getElementById("chat");
+
+let div = document.createElement("div");
+div.classList.add("message");
+div.innerText = text;
+
+chat.appendChild(div);
 }
