@@ -19,7 +19,7 @@ function connect() {
 function setupConnection() {
 
     conn.on("data", function(data) {
-        addMessage("Friend: " + data);
+        addMessage("friend", data);
     });
 
 }
@@ -27,13 +27,31 @@ function setupConnection() {
 function send() {
 
     let msg = document.getElementById("message").value;
-    conn.send(msg);
-    addMessage("You: " + msg);
 
+    if(!msg) return;
+
+    conn.send(msg);
+    addMessage("you", msg);
+
+    document.getElementById("message").value = "";
 }
 
-function addMessage(msg) {
+function addMessage(type, text) {
 
     let chat = document.getElementById("chat");
-    chat.innerHTML += msg + "<br>";
+
+    let div = document.createElement("div");
+    div.classList.add("message");
+
+    if(type === "you"){
+        div.classList.add("you");
+        div.innerText = "You: " + text;
+    } else {
+        div.classList.add("friend");
+        div.innerText = "Friend: " + text;
+    }
+
+    chat.appendChild(div);
+
+    chat.scrollTop = chat.scrollHeight;
 }
